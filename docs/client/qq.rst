@@ -13,6 +13,7 @@ qq地图
 
    client = QQMapClient('key')
 
+   client.geocoder.geocoder("北京")
 
 .. toctree::
    :maxdepth: 2

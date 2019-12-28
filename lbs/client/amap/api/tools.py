@@ -11,7 +11,7 @@ class Tools(base.AmapBaseApi):
     工具
     """
 
-    def district(self, keywords=None, subdistrict=1, page=1, offset=20, extensions="base", filter=None):
+    def district(self, keywords=None, subdistrict=1, page=1, offset=20, extensions="base", _filter=None):
         """
         行政区域查询
         https://lbs.amap.com/api/webservice/guide/api/district
@@ -21,7 +21,7 @@ class Tools(base.AmapBaseApi):
         :param page: 需要第几页数据
         :param offset: 最外层返回数据个数
         :param extensions: 返回结果控制
-        :param filter: 根据区划过滤
+        :param _filter: 根据区划过滤
         """
         data = optionaldict({
             'keywords': keywords,
@@ -29,7 +29,7 @@ class Tools(base.AmapBaseApi):
             'page': page,
             'offset': offset,
             'extensions': extensions,
-            'filter': filter,
+            'filter': _filter,
         })
         return self._get("/v3/config/district", data)
 
@@ -127,4 +127,4 @@ class Tools(base.AmapBaseApi):
 
         :param data: body数据
         """
-        return self._post('/v4/grasproad/driving', data)
+        return self._post('/v4/grasproad/driving', json=data)

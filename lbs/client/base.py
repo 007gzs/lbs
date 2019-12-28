@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 import inspect
-import json
 import logging
 import requests
 from six.moves.urllib.parse import urljoin, urlencode
@@ -85,14 +84,6 @@ class BaseClient(object):
         url = self._real_url(url_or_endpoint, kwargs)
         if 'params' not in kwargs:
             kwargs['params'] = {}
-        if isinstance(kwargs.get('data', ''), (dict, list, tuple)):
-            body = json.dumps(kwargs['data'], ensure_ascii=False)
-            body = body.encode('utf-8')
-            kwargs['data'] = body
-            if 'headers' not in kwargs:
-                kwargs['headers'] = {}
-            kwargs['headers']['Content-Type'] = 'application/json'
-
         kwargs['timeout'] = kwargs.get('timeout', self.timeout)
         result_processor = kwargs.pop('result_processor', None)
         res = self._http.request(
@@ -128,6 +119,28 @@ class BaseClient(object):
             # Return origin response object if we can not decode it as JSON
             self.get_logger().debug('Can not decode response as JSON', exc_info=True)
             return res
+        return result
+
+    def _parse_error_code(self, url, kwargs, res, result, message_filed, code_field, ok_code, code_type=None):
+        if not isinstance(result, dict):
+            return result
+        if code_type is not None:
+            if code_field in result:
+                result[code_field] = code_type(result[code_field])
+
+        if code_field in result and result[code_field] != ok_code:
+            errcode = result[code_field]
+            errmsg = result.get(message_filed, errcode)
+
+            self.get_logger().error("\n【请求地址】: %s\n【请求参数】：%s \n%s\n【错误信息】：%s",
+                                    url, kwargs.get('params', ''), kwargs.get('data', ''), result)
+            raise LbsClientException(
+                errcode,
+                errmsg,
+                client=self,
+                request=res.request,
+                response=res
+            )
         return result
 
     def _handle_result(self, res, method=None, url=None, **kwargs):
