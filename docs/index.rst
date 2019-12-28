@@ -47,6 +47,16 @@ QQ地图
    client/baidu
 
 
+通用工具
+--------------------
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   core/*
+
+
 Changelogs
 ---------------
 

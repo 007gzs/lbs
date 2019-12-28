@@ -24,4 +24,3 @@ class BaiduMapClient(BaseClient):
         kwargs.setdefault("params", dict())
         kwargs['params']['ak'] = self.ak
         return method, uri, kwargs
-

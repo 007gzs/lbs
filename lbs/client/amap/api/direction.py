@@ -20,9 +20,11 @@ class Direction(base.AmapBaseApi):
         :param destination: 目的地
         """
         origin, num = self._parse_location(origin, False)
-        assert num == 1, "出发点解析失败"
+        if num != 1:
+            raise ValueError("出发点解析失败")
         destination, num = self._parse_location(destination, False)
-        assert num == 1, "目的地解析失败"
+        if num != 1:
+            raise ValueError("目的地解析失败")
         data = optionaldict({
             "origin": origin,
             "destination": destination,
@@ -45,9 +47,11 @@ class Direction(base.AmapBaseApi):
         :param time: 出发时间
         """
         origin, num = self._parse_location(origin, False)
-        assert num == 1, "出发点解析失败"
+        if num != 1:
+            raise ValueError("出发点解析失败")
         destination, num = self._parse_location(destination, False)
-        assert num == 1, "目的地解析失败"
+        if num != 1:
+            raise ValueError("目的地解析失败")
         data = optionaldict({
             'origin': origin,
             'destination': destination,
@@ -86,9 +90,11 @@ class Direction(base.AmapBaseApi):
         :param extensions: 返回结果控制
         """
         origin, num = self._parse_location(origin, False)
-        assert 0 < num <= 3, "出发点解析失败"
+        if not 0 < num <= 3:
+            raise ValueError("出发点解析失败")
         destination, num = self._parse_location(destination, False)
-        assert num == 1, "目的地解析失败"
+        if num != 1:
+            raise ValueError("目的地解析失败")
         data = optionaldict({
             'origin': origin,
             'destination': destination,
@@ -119,4 +125,3 @@ class Direction(base.AmapBaseApi):
 
     def distance(self, origin, destination, ):
         pass
-

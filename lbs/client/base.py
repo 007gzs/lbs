@@ -5,7 +5,7 @@ import inspect
 import json
 import logging
 import requests
-from six.moves.urllib.parse import urljoin
+from six.moves.urllib.parse import urljoin, urlencode
 
 from lbs.core.exceptions import LbsClientException
 from lbs.core.utils import json_loads
@@ -21,18 +21,19 @@ class LbsBaseAPI(object):
         self._client = client
 
     def _get(self, url, params=None, **kwargs):
-        if self.API_BASE_URL:
+        if self.API_BASE_URL and 'api_base_url' not in kwargs:
             kwargs['api_base_url'] = self.API_BASE_URL
         return self._client.get(url, params, **kwargs)
 
     def _post(self, url, data=None, params=None, **kwargs):
-        if self.API_BASE_URL:
+        if self.API_BASE_URL and 'api_base_url' not in kwargs:
             kwargs['api_base_url'] = self.API_BASE_URL
         return self._client.post(url, data, params, **kwargs)
 
-    @property
-    def corp_id(self):
-        return self._client.corp_id
+    def _gen_get_url(self, url, **kwargs):
+        if self.API_BASE_URL and 'api_base_url' not in kwargs:
+            kwargs['api_base_url'] = self.API_BASE_URL
+        return self._client.gen_get_url(url, **kwargs)
 
 
 def _is_api_endpoint(obj):
@@ -60,16 +61,31 @@ class BaseClient(object):
     def get_logger(self):
         return logger
 
-    def _request(self, method, url_or_endpoint, **kwargs):
+    def gen_get_url(self, url, **kwargs):
+        url = self._real_url(url, kwargs)
+        _, url, kwargs = self._handle_pre_request('get', url, kwargs)
+        if "params" not in kwargs:
+            return url
+        if "?" not in url:
+            return url + "?" + urlencode(kwargs["params"])
+        if not url.endswith("&"):
+            url += "&"
+        url += urlencode(kwargs["params"])
+        return url
+
+    def _real_url(self, url_or_endpoint, kwargs):
         if not url_or_endpoint.startswith(('http://', 'https://')):
             api_base_url = kwargs.pop('api_base_url', self.API_BASE_URL)
             url = urljoin(api_base_url, url_or_endpoint)
         else:
             url = url_or_endpoint
+        return url
 
+    def _request(self, method, url_or_endpoint, **kwargs):
+        url = self._real_url(url_or_endpoint, kwargs)
         if 'params' not in kwargs:
             kwargs['params'] = {}
-        if isinstance(kwargs.get('data', ''), dict):
+        if isinstance(kwargs.get('data', ''), (dict, list, tuple)):
             body = json.dumps(kwargs['data'], ensure_ascii=False)
             body = body.encode('utf-8')
             kwargs['data'] = body

@@ -42,10 +42,10 @@ class Geocode(base.AmapBaseApi):
         :param batch: 批量查询控制
         :param roadlevel: 道路等级
         :param homeorcorp: 是否优化POI返回顺序
-        :return:
         """
         location, num = self._parse_location(location)
-        assert num > 0, "location解析失败"
+        if num == 0:
+            raise ValueError("location解析失败")
         if num > 1 and batch is None:
             batch = True
         data = optionaldict({
