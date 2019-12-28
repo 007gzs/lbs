@@ -51,7 +51,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='lbs',
-    version='0.1.0',
+    version='0.2.0',
     keywords='lbs map baidu amap qq autonavi wgs84 gcj02 bd09',
     description='Location Based Services SDK',
     long_description=long_description,
