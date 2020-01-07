@@ -29,7 +29,8 @@ class Geocode(base.AmapBaseApi):
             "city": city,
             "batch": batch,
         })
-        return self._get("/v3/geocode/geo", data, result_processor=lambda x: x['geocodes'])
+        ret_field = 'geocodes' if batch else 'geocode'
+        return self._get("/v3/geocode/geo", data, result_processor=lambda x: x[ret_field])
 
     def regeo(self, location, poitype=None, radius=1000, extensions='base', batch=None, roadlevel=None, homeorcorp=0):
         """
@@ -57,4 +58,5 @@ class Geocode(base.AmapBaseApi):
             "roadlevel": roadlevel,
             "homeorcorp": homeorcorp,
         })
-        return self._get("/v3/geocode/regeo", data, result_processor=lambda x: x['regeocode'])
+        ret_field = 'regeocodes' if batch else 'regeocode'
+        return self._get("/v3/geocode/regeo", data, result_processor=lambda x: x[ret_field])
