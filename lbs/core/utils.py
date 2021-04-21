@@ -26,8 +26,9 @@ class ObjectDict(dict):
 class LbsSigner(object):
     """AllInPay data signer"""
 
-    def __init__(self, delimiter=b'', key=None):
-        self._key = key
+    def __init__(self, delimiter=b'', end=None, start=None):
+        self._start = start
+        self._end = end
         self._data = []
         self._delimiter = to_binary(delimiter)
 
@@ -45,8 +46,10 @@ class LbsMd5Signer(LbsSigner):
         data = copy.copy(self._data)
         data.sort()
         str_to_sign = self._delimiter.join(data)
-        if self._key:
-            str_to_sign = str_to_sign + to_binary(self._key)
+        if self._start:
+            str_to_sign = to_binary(self._start) + str_to_sign
+        if self._end:
+            str_to_sign = str_to_sign + to_binary(self._end)
         return hashlib.md5(str_to_sign).hexdigest()
 
 

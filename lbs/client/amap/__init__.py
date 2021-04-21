@@ -60,7 +60,7 @@ class AmapClient(BaseClient):
         return result
 
     def get_sig(self, **params):
-        signer = utils.LbsMd5Signer(delimiter=b'&', key=self.sig_key)
+        signer = utils.LbsMd5Signer(delimiter=b'&', end=self.sig_key)
         for k, v in params.items():
             signer.add_data("%s=%s" % (k, v))
         return signer.signature

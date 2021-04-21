@@ -15,7 +15,7 @@ class UtilityTestCase(unittest.TestCase):
 
     def test_md5_signer(self):
 
-        signer = LbsMd5Signer(key="123")
+        signer = LbsMd5Signer(end="123")
         signer.add_data('789')
         signer.add_data('456')
         signer.add_data('123')
