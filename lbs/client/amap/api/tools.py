@@ -33,14 +33,14 @@ class Tools(base.AmapBaseApi):
         })
         return self._get("/v3/config/district", data)
 
-    def ip(self, ip):
+    def ip(self, ip, version="3"):
         """
         IP定位
         https://lbs.amap.com/api/webservice/guide/api/ipconfig
 
         :param ip: ip地址
         """
-        return self._get("/v3/config/district", {'ip': ip})
+        return self._get("/v%s/ip" % version, {'ip': ip})
 
     def convert(self, locations, coordsys="autonavi"):
         """
